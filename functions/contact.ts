@@ -74,11 +74,46 @@ export const onRequestPost = async ({ request, env }: { request: Request; env: E
   recent.push(now)
   rateLimitStore.set(ip, recent)
 
+  const subject = `Tayf Teknik İletişim Formu: ${name}`
+  const text = [
+    'Yeni iletişim talebi alındı.',
+    '',
+    `Ad Soyad: ${name}`,
+    `Telefon: ${phone}`,
+    `Hizmet: ${service}`,
+    'Mesaj:',
+    message,
+  ].join('\n')
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #0f172a; line-height: 1.6;">
+      <h2 style="margin: 0 0 16px; color: #0f172a;">Tayf Teknik İletişim Formu</h2>
+      <table style="border-collapse: collapse; width: 100%; max-width: 520px;">
+        <tr>
+          <td style="padding: 8px 0; font-weight: bold;">Ad Soyad</td>
+          <td style="padding: 8px 0;">${name}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: bold;">Telefon</td>
+          <td style="padding: 8px 0;">${phone}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: bold;">Hizmet</td>
+          <td style="padding: 8px 0;">${service}</td>
+        </tr>
+      </table>
+      <div style="margin-top: 16px;">
+        <p style="margin: 0 0 8px; font-weight: bold;">Mesaj</p>
+        <p style="margin: 0; white-space: pre-line;">${message}</p>
+      </div>
+    </div>
+  `.trim()
+
   const body = new URLSearchParams({
     from: env.MAILGUN_FROM,
     to: env.MAILGUN_TO,
-    subject: `New contact request from ${name}`,
-    text: `Name: ${name}\nPhone: ${phone}\nService: ${service}\nMessage:\n${message}`,
+    subject,
+    text,
+    html,
   })
 
   const authHeader = `Basic ${btoa(`api:${env.MAILGUN_API_KEY}`)}`

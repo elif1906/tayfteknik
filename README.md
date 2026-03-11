@@ -40,8 +40,19 @@ export default defineConfig([
       // other options...
     },
   },
-])
+  ])
 ```
+
+## Cloudflare Pages Contact Form
+
+Add the following environment variables in your Cloudflare Pages project settings:
+
+- `MAILGUN_API_KEY`: Mailgun API key
+- `MAILGUN_DOMAIN`: `sandboxb16ed9b3dddd4cb7b8b940e98c638e6e.mailgun.org`
+- `MAILGUN_FROM`: `postmaster@sandboxb16ed9b3dddd4cb7b8b940e98c638e6e.mailgun.org`
+- `MAILGUN_TO`: `alikelebek@tayfteknik.info`
+- `RATE_LIMIT_WINDOW_MS`: Optional, default `600000` (10 minutes)
+- `RATE_LIMIT_MAX`: Optional, default `3`
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
@@ -71,3 +82,4 @@ export default defineConfig([
   },
 ])
 ```
+

@@ -265,6 +265,9 @@ const translations = {
         message: 'Kısaca ihtiyacınızı yazın',
       },
       submit: 'Talep Gönder',
+      sending: 'Gönderiliyor...',
+      success: 'Talebiniz gönderildi. Kısa süre içinde size dönüş yapacağız.',
+      error: 'Mesaj gönderilemedi. Lütfen tekrar deneyin.',
     },
     footer: {
       description: 'Doğalgaz, klima ve kombi servisinde uzman ekip.',
@@ -541,6 +544,9 @@ const translations = {
         message: 'Briefly describe your need',
       },
       submit: 'Send Request',
+      sending: 'Sending...',
+      success: 'Your request has been sent. We will contact you soon.',
+      error: 'Unable to send message. Please try again.',
     },
     footer: {
       description: 'Expert team for gas installation plus AC and boiler service.',
@@ -570,10 +576,21 @@ const contactInfo = {
   address: 'Kozyatağı Mah. Enerji Sok. No:12, Kadıköy / İstanbul',
 }
 
+const initialContactForm = {
+  name: '',
+  phone: '',
+  service: '',
+  message: '',
+  company: '',
+}
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [language, setLanguage] = useState<Language>('tr')
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [contactForm, setContactForm] = useState(initialContactForm)
+  const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
+  const [contactError, setContactError] = useState<string | null>(null)
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme')
@@ -585,6 +602,41 @@ function App() {
   useEffect(() => {
     localStorage.setItem('theme', theme)
   }, [theme])
+
+  const handleContactChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target
+    setContactForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleContactSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (contactStatus === 'sending') return
+
+    setContactStatus('sending')
+    setContactError(null)
+
+    try {
+      const response = await fetch('/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactForm),
+      })
+      const data = (await response.json().catch(() => ({}))) as { ok?: boolean; error?: string }
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error ?? 'Unable to send message.')
+      }
+
+      setContactStatus('success')
+      setContactForm(initialContactForm)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to send message.'
+      setContactStatus('error')
+      setContactError(message)
+    }
+  }
 
   const content = translations[language]
   const isBlogPage = window.location.pathname.startsWith('/blog')
@@ -1205,32 +1257,64 @@ function App() {
             <div className="rounded-3xl bg-white p-6 text-ink-900 shadow-soft dark:bg-ink-800 dark:text-ink-50">
               <h3 className="text-lg font-semibold">{content.contact.formTitle}</h3>
               <p className="mt-2 text-sm text-ink-600 dark:text-ink-300">{content.contact.formDescription}</p>
-              <form className="mt-6 grid gap-4">
+              <form className="mt-6 grid gap-4" onSubmit={handleContactSubmit}>
+                <input
+                  className="hidden"
+                  name="company"
+                  value={contactForm.company}
+                  onChange={handleContactChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
                 <input
                   className="rounded-2xl border border-ink-200 px-4 py-3 text-sm dark:border-ink-700 dark:bg-ink-900 dark:text-ink-100"
                   placeholder={content.contact.fields.name}
                   type="text"
+                  name="name"
+                  value={contactForm.name}
+                  onChange={handleContactChange}
+                  required
                 />
                 <input
                   className="rounded-2xl border border-ink-200 px-4 py-3 text-sm dark:border-ink-700 dark:bg-ink-900 dark:text-ink-100"
                   placeholder={content.contact.fields.phone}
                   type="tel"
+                  name="phone"
+                  value={contactForm.phone}
+                  onChange={handleContactChange}
+                  required
                 />
                 <input
                   className="rounded-2xl border border-ink-200 px-4 py-3 text-sm dark:border-ink-700 dark:bg-ink-900 dark:text-ink-100"
                   placeholder={content.contact.fields.service}
                   type="text"
+                  name="service"
+                  value={contactForm.service}
+                  onChange={handleContactChange}
+                  required
                 />
                 <textarea
                   className="min-h-[120px] rounded-2xl border border-ink-200 px-4 py-3 text-sm dark:border-ink-700 dark:bg-ink-900 dark:text-ink-100"
                   placeholder={content.contact.fields.message}
+                  name="message"
+                  value={contactForm.message}
+                  onChange={handleContactChange}
+                  required
                 />
                 <button
-                  className="rounded-2xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700"
-                  type="button"
+                  className="rounded-2xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-70"
+                  type="submit"
+                  disabled={contactStatus === 'sending'}
                 >
-                  {content.contact.submit}
+                  {contactStatus === 'sending' ? content.contact.sending : content.contact.submit}
                 </button>
+                {contactStatus === 'success' && (
+                  <p className="text-sm font-medium text-emerald-600">{content.contact.success}</p>
+                )}
+                {contactStatus === 'error' && (
+                  <p className="text-sm font-medium text-rose-600">{contactError ?? content.contact.error}</p>
+                )}
               </form>
             </div>
           </div>
@@ -1239,7 +1323,7 @@ function App() {
         )}
       </main>
 
-      <footer className="border-t border-ink-100 bg-white dark:border-ink-800 dark:bg-ink-900">
+      <footer className="nav-font border-t border-ink-100 bg-white dark:border-ink-800 dark:bg-ink-900">
         <div className="mx-auto flex flex-col items-start justify-between gap-6 px-6 py-8 text-sm text-ink-600 md:flex-row md:items-center dark:text-ink-300">
           <div>
             <p className="font-semibold text-ink-900 dark:text-ink-50">TayfTeknik</p>

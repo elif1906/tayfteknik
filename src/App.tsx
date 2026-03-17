@@ -2,13 +2,18 @@ import { useEffect, useState } from 'react'
 
 type Language = 'tr' | 'en'
 
+type NavLink = {
+  label: string
+  href: string
+}
+
 const Logo = () => (
   <img className="h-16 w-auto md:h-20" src="/logo.png" alt="TayfTeknik logo" />
 )
 
 const translations = {
   tr: {
-    brandSubtitle: 'Doğalgaz, Klima & Kombi Servisi',
+    brandSubtitle: 'Kart Tamiri (PCB), Klima & Kombi Servisi',
     navLinks: [
       { label: 'Hizmetler', href: '#services' },
       { label: 'Referanslar', href: '#references' },
@@ -21,26 +26,26 @@ const translations = {
         { label: 'İletişim', href: '/#contact' },
       ],
       eyebrow: 'Blog',
-      title: 'Doğalgaz, klima ve kombi bakım rehberi',
+      title: 'Kart tamiri (PCB), klima ve kombi rehberi',
       subtitle: 'Güvenli kullanım ve verimli bakım için ekibimizin pratik önerileri.',
       ctaPrimary: 'Servis Talebi Oluştur',
       ctaSecondary: 'Ana Sayfaya Dön',
       posts: [
         {
-          title: 'Doğalgaz Tesisatında Güvenli Kullanım ve Periyodik Bakım',
-          category: 'Doğalgaz',
+          title: 'Elektronik Kart (PCB) Arızası Nasıl Anlaşılır?',
+          category: 'Kart Tamiri',
           readTime: '5 dk okuma',
           image:
-            'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
-          imageAlt: 'Doğalgaz tesisatı bakımı',
+            '/img/6.jpeg',
+          imageAlt: 'Elektronik kart (PCB) tamiri',
           summary:
-            'Yıllık kontroller, kaçak riskini azaltır ve gaz tesisatının güvenli çalışmasını sağlar. Düzenli bakım, evdeki cihazların verimli çalışmasına yardımcı olur ve ani arızaların önüne geçer.',
+            'Kombi, klima ve diğer cihazlarda kart arızası; ekranda hata kodu, düzensiz çalışma veya hiç açılmama gibi belirtilerle kendini gösterebilir.',
           details:
-            'Yetkili ekipler; bağlantı noktaları, esnek hortumlar ve vana performanslarını test ederek olası riskleri raporlar. Bu kontroller hem güvenliği artırır hem de uzun vadede maliyetleri düşürür.',
+            'Profesyonel arıza tespitinde kart üzerinde görsel kontrol, ölçüm, kısa devre ve bileşen testi yapılır. Doğru teşhis, gereksiz parça değişimini önler ve onarım süresini kısaltır.',
           tips: [
-            'Yılda bir kaçak testi ve bağlantı kontrolü yaptırın.',
-            'Menfezleri kapatmayın; havalandırmayı açık tutun.',
-            'Gaz kokusu aldığınızda vanayı kapatıp servis çağırın.',
+            'Cihaz sık sık reset atıyorsa hata kodunu not alın.',
+            'Yanık kokusu veya is lekesi varsa cihazı kapatın.',
+            'Kart tamiri öncesi voltaj dalgalanmasına karşı koruma kullanın.',
           ],
         },
         {
@@ -48,7 +53,7 @@ const translations = {
           category: 'Klima',
           readTime: '4 dk okuma',
           image:
-            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80',
+            '/img/2.jpeg',
           imageAlt: 'Klima iç ünitesi ve filtre temizliği',
           summary: 'Düzenli filtre temizliği, hem sağlıklı hava hem de düşük enerji tüketimi sunar. Klima bakımı yapılmadığında cihaz daha fazla enerji harcar ve ortam havası ağırlaşır.',
           details:
@@ -64,7 +69,7 @@ const translations = {
           category: 'Kombi Bakım',
           readTime: '6 dk okuma',
           image:
-            'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80',
+            '/img/4.jpeg',
           imageAlt: 'Kombi bakım çalışması',
           summary: 'Periyodik bakım, ısınma performansını artırır ve cihaz ömrünü uzatır. Kombi bakımı yapılmadığında yakıt tüketimi artar ve arıza riski yükselir.',
           details:
@@ -80,7 +85,7 @@ const translations = {
           category: 'Isıtma',
           readTime: '5 dk okuma',
           image:
-            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80',
+            '/img/4.jpeg',
           imageAlt: 'Petek temizliği ve ısıtma',
           summary: 'Peteklerin içinde biriken tortu, alt ve üst sıcaklık farklarına neden olur ve ısınma performansını düşürür.',
           details:
@@ -96,7 +101,7 @@ const translations = {
           category: 'Klima',
           readTime: '4 dk okuma',
           image:
-            'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80',
+            '/img/2.jpeg',
           imageAlt: 'Klima temizliği ve hijyen',
           summary: 'Klima iç ünitesindeki nem ve toz birikimi zamanla kötü kokuya ve bakteri oluşumuna yol açabilir.',
           details:
@@ -108,28 +113,29 @@ const translations = {
           ],
         },
         {
-          title: 'Doğalgaz Sayacı ve Havalandırma Kontrolleri',
-          category: 'Doğalgaz',
+          title: 'Kombi & Klima Kartı Tamir Süreci: Nelere Dikkat Etmeli?',
+          category: 'Kart Tamiri',
           readTime: '5 dk okuma',
           image:
-            'https://images.unsplash.com/photo-1496307653780-42ee777d4833?auto=format&fit=crop&w=1200&q=80',
-          imageAlt: 'Doğalgaz sayacı kontrolü',
-          summary: 'Sayaç ve havalandırma kontrolü, gaz kullanımında güvenliği artırır ve tesisatın sağlıklı çalışmasını destekler.',
+            '/img/3.jpeg',
+          imageAlt: 'Kombi ve klima kartı onarımı',
+          summary:
+            'Kart tamirinde doğru arıza tespiti, kaliteli komponent kullanımı ve test süreci uzun ömürlü onarım için kritiktir.',
           details:
-            'Sayaç çevresinin açık olması, olası kaçakların hızlı tespitini kolaylaştırır. Havalandırma menfezlerinin açık tutulması, gazın güvenli şekilde dağılmasını sağlar.',
+            'Onarım sonrası kart; yük altında test edilir, bağlantı noktaları kontrol edilir ve cihaz üzerinde çalışma doğrulanır. Gerekirse kart revizyonu (kondansatör, röle, sürücü elemanları) uygulanır.',
           tips: [
-            'Sayaç çevresinde temizlik yapın ve eşyaları uzak tutun.',
-            'Menfezlerin önünü kapatmayın; hava akışını sürekli açık bırakın.',
-            'Kaçak şüphesinde hemen vanayı kapatıp ekip çağırın.',
+            'Cihazın marka/model bilgisi ve hata kodunu paylaşın.',
+            'Kart üzerinde nem/korozyon varsa mutlaka belirtin.',
+            'Onarım sonrası cihazın topraklama ve besleme değerlerini kontrol ettirin.',
           ],
         },
       ],
     },
     hero: {
-      badge: '7/24 Doğalgaz, Klima & Kombi Servisi',
-      title: 'Doğalgaz, klima ve kombi çözümleriyle eviniz dört mevsim konforlu.',
+      badge: '7/24 Kart Tamiri (PCB), Klima & Kombi Servisi',
+      title: 'Kart tamiri (PCB), klima ve kombi çözümleriyle eviniz dört mevsim konforlu.',
       subtitle:
-        'TayfTeknik, doğalgaz tesisatı ile klima ve kombi bakım-onarım hizmetlerinde sertifikalı ekibiyle İstanbul genelinde hızlı ve güvenilir servis sunar.',
+        'TayfTeknik, elektronik kart (PCB) tamiri ile klima ve kombi bakım-onarım hizmetlerinde İstanbul genelinde hızlı ve güvenilir servis sunar.',
       primaryCta: 'Ücretsiz Keşif Al',
       secondaryCta: '0 (506) 369 76 93',
       stats: [
@@ -141,7 +147,7 @@ const translations = {
     quickCard: {
       eyebrow: 'Hızlı Servis Planlama',
       title: 'Bugün içinde servis randevusu oluşturun.',
-      description: 'Formu doldurun, doğalgaz/klima/kombi ekibimiz 30 dakika içinde sizinle iletişime geçsin.',
+      description: 'Formu doldurun, kart tamiri/klima/kombi ekibimiz 30 dakika içinde sizinle iletişime geçsin.',
       items: [
         { label: 'Hizmet Türü', value: 'Kombi veya Klima Bakımı' },
         { label: 'Ortalama Süre', value: '60 dakika' },
@@ -151,52 +157,46 @@ const translations = {
     },
     services: {
       eyebrow: 'Hizmetler',
-      title: 'Doğalgaz, klima ve kombi hizmetlerinin tamamında yanınızdayız.',
+      title: 'Kart tamiri (PCB), klima ve kombi hizmetlerinin tamamında yanınızdayız.',
       description:
-        'Ev ve işletmeler için güvenli doğalgaz tesisatı, verimli ısıtma ve ferah bir iklimlendirme sağlıyoruz.',
+        'Ev ve işletmeler için elektronik kart (PCB) tamiri, verimli ısıtma ve ferah bir iklimlendirme sağlıyoruz.',
       items: [
         {
-          title: 'Doğalgaz Tesisatı',
-          description: 'Yeni tesisat kurulumları, proje çizimi ve güvenli gaz hattı uygulamaları.',
-          image:
-            'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
+          title: 'Elektronik Kart (PCB) Tamiri',
+          description: 'Kombi, klima ve cihaz kartlarında arıza tespiti, komponent değişimi ve test süreçleri.',
+          image: '/img/6.jpeg',
         },
         {
           title: 'Kombi Bakım & Onarım',
           description: 'Verimli çalışma için detaylı bakım, arıza tespiti ve hızlı müdahale.',
-          image:
-            'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
+          image: '/img/4.jpeg',
         },
         {
           title: 'Klima Bakım & Onarım',
           description: 'Filtre temizliği, gaz kontrolü ve arıza onarımında hızlı destek.',
-          image:
-            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80',
+          image: '/img/2.jpeg',
         },
         {
-          title: 'Gaz Kaçağı Tespiti',
-          description: 'Dedektörle kaçak tespiti, raporlama ve acil güvenlik önlemleri.',
-          image:
-            'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80',
+          title: 'Kart Arıza Tespiti',
+          description: 'Kontrol kartlarında ölçüm, kısa devre analizi ve yerinde/atölye değerlendirme.',
+          image: '/img/3.jpeg',
         },
         {
           title: 'Kombi & Klima Montajı',
           description: 'Yetkili montaj, doğru konumlandırma ve garantiye uygun kurulum.',
-          image:
-            'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80',
+          image: '/img/1.jpeg',
         },
         {
           title: 'Bakıma Yönlendirme',
           description: 'Periyodik bakım planı, hatırlatma ve takip desteği.',
-          image:
-            'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80',
-        }
+          image: '/img/5.jpeg',
+        },
       ],
     },
     why: {
       eyebrow: 'Neden TayfTeknik?',
       title: 'Güvenlik, hız ve kaliteyi birleştiriyoruz.',
-      description: 'Geniş servis ağımız ve deneyimli ekibimizle doğalgaz, klima ve kombi hizmetlerinde sorunsuz deneyim sunuyoruz.',
+      description: 'Geniş servis ağımız ve deneyimli ekibimizle kart tamiri, klima ve kombi hizmetlerinde sorunsuz deneyim sunuyoruz.',
       highlights: [
         { title: 'Sertifikalı Ustalar', description: 'Yetkili ve eğitimli ekiplerle güvenli uygulama.' },
         { title: 'Hızlı Müdahale', description: 'İstanbul geneline aynı gün servis imkanı.' },
@@ -252,7 +252,7 @@ const translations = {
     contact: {
       eyebrow: 'İletişim',
       title: 'Keşif, bakım veya acil destek.',
-      description: 'Doğalgaz, klima ve kombi için hızlı teklif alın; formu doldurun ya da doğrudan arayın.',
+      description: 'Kart tamiri (PCB), klima ve kombi için hızlı teklif alın; formu doldurun ya da doğrudan arayın.',
       phoneLabel: 'Telefon',
       emailLabel: 'E-posta',
       addressLabel: 'Adres',
@@ -270,7 +270,7 @@ const translations = {
       error: 'Mesaj gönderilemedi. Lütfen tekrar deneyin.',
     },
     footer: {
-      description: 'Doğalgaz, klima ve kombi servisinde uzman ekip.',
+      description: 'Kart tamiri (PCB), klima ve kombi servisinde uzman ekip.',
       credit: '2026 TayfTeknik tarafından yapılmış.',
     },
     cta: {
@@ -290,7 +290,7 @@ const translations = {
     },
   },
   en: {
-    brandSubtitle: 'Natural Gas, AC & Boiler Service',
+    brandSubtitle: 'PCB Repair, AC & Boiler Service',
     navLinks: [
       { label: 'Services', href: '#services' },
       { label: 'References', href: '#references' },
@@ -303,25 +303,25 @@ const translations = {
         { label: 'Contact', href: '/#contact' },
       ],
       eyebrow: 'Blog',
-      title: 'Natural gas, AC, and boiler care guide',
+      title: 'PCB repair, AC, and boiler care guide',
       subtitle: 'Practical tips from our technicians for safe use and efficient maintenance.',
       ctaPrimary: 'Request Service',
       ctaSecondary: 'Back to Home',
       posts: [
         {
-          title: 'Safe Natural Gas Use and Seasonal Inspection Checklist',
-          category: 'Natural Gas',
+          title: 'How to Spot a Faulty Control Board (PCB)',
+          category: 'PCB Repair',
           readTime: '5 min read',
           image:
-            'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
-          imageAlt: 'Natural gas line inspection',
-          summary: 'Annual inspections reduce leak risk and keep your gas line running safely. Routine checks also support efficient appliance performance and reduce unexpected downtime.',
+            '/img/6.jpeg',
+          imageAlt: 'PCB repair and diagnostics',
+          summary: 'Control board issues often show up as error codes, random shutdowns, or devices that won’t power on. Early diagnosis helps avoid unnecessary part swaps.',
           details:
-            'Authorized technicians test connection points, flexible hoses, and valve performance to document potential risks. These inspections improve safety and lower long-term costs.',
+            'A proper diagnosis includes visual inspection, short-circuit checks, component testing, and verification under load. This approach improves repair success and reduces turnaround time.',
           tips: [
-            'Schedule yearly leak tests and connection checks.',
-            'Keep ventilation openings clear at all times.',
-            'If you smell gas, close the valve and call service immediately.',
+            'Note any error codes and when the issue occurs.',
+            'If you smell burning or see soot marks, power the unit off.',
+            'Use surge protection to reduce voltage-related failures.',
           ],
         },
         {
@@ -329,7 +329,7 @@ const translations = {
           category: 'Air Conditioning',
           readTime: '4 min read',
           image:
-            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80',
+            '/img/2.jpeg',
           imageAlt: 'Air conditioning unit maintenance',
           summary: 'Clean filters improve air quality and reduce energy consumption. Without maintenance, the system works harder and indoor air feels heavier.',
           details:
@@ -345,7 +345,7 @@ const translations = {
           category: 'Boiler Care',
           readTime: '6 min read',
           image:
-            'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1200&q=80',
+            '/img/4.jpeg',
           imageAlt: 'Boiler maintenance service',
           summary: 'Routine maintenance boosts heating performance and extends boiler life. Skipping service often leads to higher fuel usage and increased fault risk.',
           details:
@@ -361,7 +361,7 @@ const translations = {
           category: 'Heating',
           readTime: '5 min read',
           image:
-            'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=80',
+            '/img/4.jpeg',
           imageAlt: 'Radiator cleaning and heating system',
           summary: 'Sediment inside radiators causes uneven temperatures and reduces heating performance across the home.',
           details:
@@ -377,7 +377,7 @@ const translations = {
           category: 'Air Conditioning',
           readTime: '4 min read',
           image:
-            'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80',
+            '/img/2.jpeg',
           imageAlt: 'Hygienic air conditioner cleaning',
           summary: 'Moisture and dust buildup inside indoor units can cause odors and bacteria growth over time.',
           details:
@@ -389,28 +389,28 @@ const translations = {
           ],
         },
         {
-          title: 'Natural Gas Meter and Ventilation Checks',
-          category: 'Natural Gas',
+          title: 'PCB Repair Process: What to Expect',
+          category: 'PCB Repair',
           readTime: '5 min read',
           image:
-            'https://images.unsplash.com/photo-1496307653780-42ee777d4833?auto=format&fit=crop&w=1200&q=80',
-          imageAlt: 'Natural gas meter inspection',
-          summary: 'Meter and ventilation checks add safety and keep gas installations working reliably.',
+            '/img/3.jpeg',
+          imageAlt: 'Control board repair process',
+          summary: 'A durable repair depends on accurate fault finding, quality components, and post-repair testing.',
           details:
-            'Keeping the meter area clear makes leaks easier to detect. Open ventilation helps gas dissipate safely if issues occur.',
+            'After repair, the board is tested under load, connectors are verified, and operation is confirmed on the device. When needed, a board revision (capacitors, relays, driver parts) is applied for long-term stability.',
           tips: [
-            'Keep the meter area clean and free of stored items.',
-            'Never block ventilation grills or openings.',
-            'If you suspect a leak, shut the valve and call service.',
+            'Share the device model and any fault codes.',
+            'Mention moisture/corrosion if present on the board.',
+            'Have grounding and supply values checked after repair.',
           ],
         },
       ],
     },
     hero: {
-      badge: '24/7 Gas, AC & Boiler Service',
-      title: 'Year-round comfort with natural gas, air conditioning, and boiler solutions.',
+      badge: '24/7 PCB Repair, AC & Boiler Service',
+      title: 'Year-round comfort with PCB repair, air conditioning, and boiler solutions.',
       subtitle:
-        'TayfTeknik delivers certified gas installation plus AC and boiler maintenance across Istanbul with fast, reliable service.',
+        'TayfTeknik delivers professional PCB repair plus AC and boiler maintenance across Istanbul with fast, reliable service.',
       primaryCta: 'Request Free Inspection',
       secondaryCta: '0 (506) 369 76 93',
       stats: [
@@ -422,7 +422,7 @@ const translations = {
     quickCard: {
       eyebrow: 'Fast Service Planning',
       title: 'Book your service appointment today.',
-      description: 'Leave your details and our gas, AC, and boiler team will contact you within 30 minutes.',
+      description: 'Leave your details and our PCB repair, AC, and boiler team will contact you within 30 minutes.',
       items: [
         { label: 'Service Type', value: 'Boiler or AC Maintenance' },
         { label: 'Average Duration', value: '60 minutes' },
@@ -432,51 +432,45 @@ const translations = {
     },
     services: {
       eyebrow: 'Services',
-      title: 'We cover natural gas, AC, and boiler services end to end.',
-      description: 'Safe gas installations, efficient heating, and comfortable cooling for homes and businesses.',
+      title: 'We cover PCB repair, AC, and boiler services end to end.',
+      description: 'Reliable PCB repair, efficient heating, and comfortable cooling for homes and businesses.',
       items: [
         {
-          title: 'Gas Installation',
-          description: 'New installations, project design, and safe gas line applications.',
-          image:
-            'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
+          title: 'PCB Repair',
+          description: 'Diagnostics, component replacement, and testing for control boards.',
+          image: '/img/6.jpeg',
         },
         {
           title: 'Boiler Maintenance & Repair',
           description: 'Detailed maintenance, fault detection, and rapid on-site repair.',
-          image:
-            'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80',
+          image: '/img/4.jpeg',
         },
         {
           title: 'Air Conditioner Maintenance & Repair',
           description: 'Filter cleaning, refrigerant checks, and fast fault repairs.',
-          image:
-            'https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80',
+          image: '/img/2.jpeg',
         },
         {
-          title: 'Gas Leak Detection',
-          description: 'Detector-based leak inspection, reporting, and emergency safety actions.',
-          image:
-            'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80',
+          title: 'Control Board Diagnostics',
+          description: 'Measurements, short-circuit analysis, and on-site/workshop evaluation.',
+          image: '/img/3.jpeg',
         },
         {
           title: 'Boiler & AC Installation',
           description: 'Authorized setup, correct placement, and warranty-compliant installation.',
-          image:
-            'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=800&q=80',
+          image: '/img/1.jpeg',
         },
         {
           title: 'Maintenance Scheduling',
           description: 'Periodic maintenance planning, reminders, and follow-up support.',
-          image:
-            'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80',
-        }
+          image: '/img/5.jpeg',
+        },
       ],
     },
     why: {
       eyebrow: 'Why TayfTeknik?',
       title: 'We combine safety, speed, and quality.',
-      description: 'With a wide service network and experienced team, we deliver smooth gas, AC, and boiler service.',
+      description: 'With a wide service network and experienced team, we deliver smooth PCB repair, AC, and boiler service.',
       highlights: [
         { title: 'Certified Technicians', description: 'Authorized, trained teams for safe work.' },
         { title: 'Rapid Response', description: 'Same-day service across Istanbul.' },
@@ -531,7 +525,7 @@ const translations = {
     contact: {
       eyebrow: 'Contact',
       title: 'Inspection, maintenance, or urgent support.',
-      description: 'For gas, AC, and boiler service, fill out the form or call us directly.',
+      description: 'For PCB repair, AC, and boiler service, fill out the form or call us directly.',
       phoneLabel: 'Phone',
       emailLabel: 'Email',
       addressLabel: 'Address',
@@ -549,7 +543,7 @@ const translations = {
       error: 'Unable to send message. Please try again.',
     },
     footer: {
-      description: 'Expert team for gas installation plus AC and boiler service.',
+      description: 'Expert team for PCB repair plus AC and boiler service.',
       credit: 'Made by TayfTeknik in 2026.',
     },
     cta: {
@@ -603,6 +597,37 @@ function App() {
     localStorage.setItem('theme', theme)
   }, [theme])
 
+  useEffect(() => {
+    const scrollToHash = () => {
+      const hash = window.location.hash
+      if (!hash) return
+
+      const id = decodeURIComponent(hash.slice(1))
+      if (!id) return
+
+      let attempts = 0
+      const tryScroll = () => {
+        const element = document.getElementById(id)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          return
+        }
+
+        attempts += 1
+        if (attempts < 25) {
+          requestAnimationFrame(tryScroll)
+        }
+      }
+
+      tryScroll()
+    }
+
+    scrollToHash()
+    window.addEventListener('hashchange', scrollToHash)
+
+    return () => window.removeEventListener('hashchange', scrollToHash)
+  }, [])
+
   const handleContactChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
     setContactForm((prev) => ({ ...prev, [name]: value }))
@@ -640,9 +665,15 @@ function App() {
 
   const content = translations[language]
   const isBlogPage = window.location.pathname.startsWith('/blog')
-  const navLinks = isBlogPage ? content.blog.navLinks : content.navLinks
+  const navLinks: NavLink[] = content.navLinks.map((link) => {
+    if (!isBlogPage) return link
+    if (link.href.startsWith('#')) {
+      return { ...link, href: `/${link.href}` }
+    }
+    return link
+  })
   const ctaHref = isBlogPage ? '/#contact' : '#contact'
-  const logoHref = isBlogPage ? '/' : '#top'
+  const logoHref = '/#top'
 
   return (
     <div className={theme === 'dark' ? 'dark' : ''}>
@@ -1040,7 +1071,7 @@ function App() {
           </div>
         </section>
 
-        <section id="services" className="py-16">
+        <section id="services" className="scroll-mt-28 py-16">
           <div className="mx-auto max-w-6xl px-6">
             <p className="text-sm font-semibold text-brand-700">{content.services.eyebrow}</p>
             <h2 className="section-title">{content.services.title}</h2>
@@ -1107,7 +1138,7 @@ function App() {
           </div>
         </section>
 
-        <section id="references" className="bg-white py-16 dark:bg-ink-900">
+        <section id="references" className="scroll-mt-28 bg-white py-16 dark:bg-ink-900">
           <div className="mx-auto max-w-6xl px-6">
             <p className="text-sm font-semibold text-brand-700">{content.references.eyebrow}</p>
             <h2 className="section-title">{content.references.title}</h2>
@@ -1146,7 +1177,7 @@ function App() {
 
         <section
           id="contact"
-          className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-ink-50 py-16 text-ink-900 dark:from-ink-900 dark:via-ink-900 dark:to-ink-800 dark:text-ink-50"
+          className="scroll-mt-28 relative overflow-hidden bg-gradient-to-br from-brand-50 via-white to-ink-50 py-16 text-ink-900 dark:from-ink-900 dark:via-ink-900 dark:to-ink-800 dark:text-ink-50"
         >
           <div className="aurora-bg" aria-hidden="true">
             <div className="aurora-stars aurora-stars-1" />

@@ -81,19 +81,18 @@ const translations = {
           ],
         },
         {
-          title: 'Petek Temizliği ile Isı Dağılımını Dengeleyin',
+          title: 'DOĞALGAZ BİLGİSİ',
           category: 'Isıtma',
           readTime: '5 dk okuma',
           image:
             '/img/4.jpeg',
-          imageAlt: 'Petek temizliği ve ısıtma',
-          summary: 'Peteklerin içinde biriken tortu, alt ve üst sıcaklık farklarına neden olur ve ısınma performansını düşürür.',
+          imageAlt: 'Doğalgaz kullanımı',
+          summary:
+            'Doğalgaz hava ile çok iyi bir karışım sağlayarak yanma verimliliği en yüksek yakıtlardan birini oluşturmaktadır.',
           details:
-            'Düzenli petek temizliği sayesinde kombi daha kısa sürede istenen sıcaklığa ulaşır ve yakıt tüketimi azalır. Özellikle eski tesisatlarda yılda bir temizlik önerilir.',
+            'Doğalgaz yandığında kül bırakmaz, bu nedenle temiz bir yakıttır. Yanması son derece hassas olarak kontrol edilebilir. Bu nedenle oldukça yüksek teknoloji ile üretilen gaz yakıcı cihazlar imal edilmiştir. Doğalgaz yakıcıları tamamen otomatik kontrolle ve emniyetli bir şekilde çalışır. Devreye çabuk girip çıkabilir.',
           tips: [
-            'Peteklerin üst kısmı soğuk kalıyorsa hava alma işlemi yapın.',
-            'Tesisat suyu kirli görünüyorsa profesyonel kimyasal temizlik isteyin.',
-            'Isınma dengesini korumak için termostatik vana kullanın.',
+            'Bu cihazları Doğalgaz Brülör Kazan Sistemleri, Kombiler, Doğalgaz Sobaları ve Doğalgazlı Şofbenler olarak sıralayabiliriz.',
           ],
         },
         {
@@ -578,6 +577,44 @@ const initialContactForm = {
   company: '',
 }
 
+const siteUrl = 'https://tayfteknik.com.tr'
+const defaultOgImageUrl = `${siteUrl}/logo.png`
+
+const seoContent = {
+  tr: {
+    home: {
+      title: 'TayfTeknik | Kart Tamiri (PCB), Klima ve Kombi Servisi',
+      description:
+        'TayfTeknik; kart tamiri (PCB), klima ve kombi bakim-onarim hizmetlerinde Istanbul genelinde hizli ve guvenilir servis sunar.',
+      url: `${siteUrl}/`,
+      locale: 'tr_TR',
+    },
+    blog: {
+      title: 'TayfTeknik Blog | Kart Tamiri, Klima ve Kombi Rehberi',
+      description:
+        'Kart tamiri (PCB), klima bakimi ve kombi verimliligi icin pratik ipuclari, ariza belirtileri ve uzman onerileri.',
+      url: `${siteUrl}/blog`,
+      locale: 'tr_TR',
+    },
+  },
+  en: {
+    home: {
+      title: 'TayfTeknik | PCB Repair, AC and Boiler Service',
+      description:
+        'TayfTeknik provides fast and reliable PCB repair, air conditioning, and boiler maintenance services across Istanbul.',
+      url: `${siteUrl}/`,
+      locale: 'en_US',
+    },
+    blog: {
+      title: 'TayfTeknik Blog | PCB, AC and Boiler Guides',
+      description:
+        'Practical guides and maintenance tips for PCB repair, air conditioning performance, and boiler efficiency.',
+      url: `${siteUrl}/blog`,
+      locale: 'en_US',
+    },
+  },
+} as const
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [language, setLanguage] = useState<Language>('tr')
@@ -585,6 +622,28 @@ function App() {
   const [contactForm, setContactForm] = useState(initialContactForm)
   const [contactStatus, setContactStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [contactError, setContactError] = useState<string | null>(null)
+  const pathname = window.location.pathname
+  const isBlogPage = pathname.startsWith('/blog')
+
+  const upsertMetaTag = (attribute: 'name' | 'property', key: string, value: string) => {
+    let tag = document.head.querySelector(`meta[${attribute}="${key}"]`) as HTMLMetaElement | null
+    if (!tag) {
+      tag = document.createElement('meta')
+      tag.setAttribute(attribute, key)
+      document.head.appendChild(tag)
+    }
+    tag.setAttribute('content', value)
+  }
+
+  const upsertCanonicalLink = (href: string) => {
+    let link = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
+    if (!link) {
+      link = document.createElement('link')
+      link.setAttribute('rel', 'canonical')
+      document.head.appendChild(link)
+    }
+    link.setAttribute('href', href)
+  }
 
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme')
@@ -628,6 +687,29 @@ function App() {
     return () => window.removeEventListener('hashchange', scrollToHash)
   }, [])
 
+  useEffect(() => {
+    const page = isBlogPage ? seoContent[language].blog : seoContent[language].home
+
+    document.title = page.title
+    document.documentElement.lang = language
+
+    upsertMetaTag('name', 'description', page.description)
+    upsertMetaTag('name', 'robots', 'index, follow')
+    upsertMetaTag('property', 'og:type', 'website')
+    upsertMetaTag('property', 'og:site_name', 'TayfTeknik')
+    upsertMetaTag('property', 'og:locale', page.locale)
+    upsertMetaTag('property', 'og:title', page.title)
+    upsertMetaTag('property', 'og:description', page.description)
+    upsertMetaTag('property', 'og:url', page.url)
+    upsertMetaTag('property', 'og:image', defaultOgImageUrl)
+    upsertMetaTag('name', 'twitter:card', 'summary_large_image')
+    upsertMetaTag('name', 'twitter:title', page.title)
+    upsertMetaTag('name', 'twitter:description', page.description)
+    upsertMetaTag('name', 'twitter:image', defaultOgImageUrl)
+
+    upsertCanonicalLink(page.url)
+  }, [isBlogPage, language])
+
   const handleContactChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
     setContactForm((prev) => ({ ...prev, [name]: value }))
@@ -664,7 +746,6 @@ function App() {
   }
 
   const content = translations[language]
-  const isBlogPage = window.location.pathname.startsWith('/blog')
   const navLinks: NavLink[] = content.navLinks.map((link) => {
     if (!isBlogPage) return link
     if (link.href.startsWith('#')) {
